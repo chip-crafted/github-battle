@@ -1,4 +1,5 @@
 import React from 'react'
+import Results from './Results'
 import { FaUserFriends, FaFighterJet, FaTrophy, FaTimesCircle } from "react-icons/all";
 import PropTypes from "prop-types";
 
@@ -110,7 +111,8 @@ export default class Battle extends React.Component {
 
         this.state = {
             playerOne: null,
-            playerTwo: null
+            playerTwo: null,
+            battle: false
         }
 
         this.handleSubmit = this.handleSubmit.bind(this)
@@ -130,8 +132,13 @@ export default class Battle extends React.Component {
     }
 
     render() {
+        const { playerOne, playerTwo, battle } = this.state
 
-        const { playerOne, playerTwo } = this.state
+        if(battle === true) {
+            return <Results playerOne={playerOne} playerTwo={playerTwo} />
+        }
+
+
         return (
             <React.Fragment>
                 <Instructions />
@@ -160,6 +167,10 @@ export default class Battle extends React.Component {
                             />
                         }
                     </div>
+                    {playerOne && playerTwo && (
+                        <button className='btn btn-dark btn-space'
+                                onClick={() => this.setState({battle: true})}> Battle</button>
+                    )}
                 </div>
                 {/*<PlayerInput onSubmit={(value) => console.log('value!', value)} label='Label!' />*/}
             </React.Fragment>
