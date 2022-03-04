@@ -31,7 +31,7 @@ export default class Popular extends React.Component {
 
         this.state = {
             selectedLanguage: 'All',
-            repos: null,
+            repos: {},
             error: null
         }
 
@@ -47,25 +47,33 @@ export default class Popular extends React.Component {
         this.setState({
             selectedLanguage: selectedLanguage,
             error: null,
-            repos: null
         })
 
-        fetchPopularRepos(selectedLanguage)
-            .then((repos) => this.setState({
-                repos,
-                error: null,
-            }))
-            .catch(()=> {
-                console.warn('Error fetching repos', error)
-
-                this.setState({
-                    error: 'There was an error fetching the repositories.'
+        if(!this.state.repos[selectedLanguage]) {
+            //update repos based on past state so we're using a fxn
+            fetchPopularRepos(selectedLanguage)
+                .then((data) => {
+                    this.setState(({repos}) => ({
+                        repos: {
+                            ...repos,
+                            [selectedLanguage]: data
+                        }
+                    }))
                 })
-            })
+                .catch(()=> {
+                    console.warn('Error fetching repos', error)
+
+                    this.setState({
+                        error: 'There was an error fetching the repositories.'
+                    })
+                })
+        }
+
     }
 
     isLoading() {
-        return this.state.repos === null && this.state.error === null
+        const { selectedLanguage, repos, error } = this.state
+        return !repos[selectedLanguage] && error === null;
     }
 
     render() {
@@ -79,7 +87,7 @@ export default class Popular extends React.Component {
 
                 {this.isLoading() && <p>LOADING</p>}
                 {error && <p>{error}</p>}
-                {repos && repos.map((repo, i) => <p key={i}>{repo?.name}</p>)}
+                {repos[selectedLanguage] && repos[selectedLanguage].map((repo, i) => <p key={i}>{repo?.name}</p>)}
             </React.Fragment>
         )
     }
