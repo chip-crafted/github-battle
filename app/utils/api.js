@@ -17,6 +17,8 @@ function getProfile(username) {
             if(profile.message) {
                 throw new Error(profile.message, username)
             }
+
+            return profile
         })
 }
 
@@ -44,9 +46,9 @@ function getUserData(player) {
         getProfile(player),
         getRepos(player),
         getFollowers(player)
-    ]).then(([profile, repos, followers]) =>  ({
+    ]).then(([profile, repos, followers, following]) => ({
         profile,
-        score: calculateScore(followers, repos)
+        score: calculateScore(profile.followers, repos)
     }))
 }
 
@@ -57,7 +59,6 @@ function getFollowers(username) {
             if(followers.message) {
                 return new Error('get followers failed')
             }
-            console.log(followers)
             return followers.reduce((num, follower) =>num + 1 ,0)
         })
 }
